@@ -1,11 +1,16 @@
 package adapter
 
-import(
+import (
 	"database/sql"
 	"fmt"
-	"time"
 	_ "github.com/go-sql-driver/mysql"
+	"time"
 )
+
+type DatabaseAdapter interface {
+	CreateTableIfNotExits()
+	Close()
+}
 
 type MySqlAdapter struct {
 	db *sql.DB

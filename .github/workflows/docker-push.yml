@@ -1,0 +1,22 @@
+name: Publish Docker image
+
+on: [push]
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PAT }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build . --tag feinesfabi/powerlevel:latest
+          docker push feinesfabi/powerlevel:latest
