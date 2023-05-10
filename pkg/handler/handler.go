@@ -8,6 +8,9 @@ import (
 
 	"github.com/BenjaminGlusa/powerlevel/pkg/adapter"
 	"github.com/BenjaminGlusa/powerlevel/pkg/api"
+	"github.com/BenjaminGlusa/powerlevel/pkg/collector"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func MakeAddMeasurementHandler(db adapter.DatabaseAdapter) http.HandlerFunc {
@@ -33,4 +36,19 @@ func MakeAddMeasurementHandler(db adapter.DatabaseAdapter) http.HandlerFunc {
 		w.WriteHeader(http.StatusAccepted)
 		
 	}
+}
+
+
+
+func MakeMetricsHandler(db adapter.DatabaseAdapter) http.Handler {
+	powerStats := func()([]collector.PowerStats, error) {
+		return collector.FetchSolarStats(db)
+	}
+
+	sc := collector.NewPowerCollector(powerStats)
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(sc)
+
+	promHandler := promhttp.HandlerFor(reg, promhttp.HandlerOpts{})
+	return promHandler
 }
