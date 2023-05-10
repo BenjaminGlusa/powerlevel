@@ -9,6 +9,7 @@ import (
 
 type DatabaseAdapter interface {
 	AddMeasurement(watt uint16) error
+	KwhLatest() float32
 	KwhToday() float32
 	KwhThisMonth() float32
 	KwhThisYear() float32
@@ -41,6 +42,18 @@ func (m *MySqlAdapter) AddMeasurement(watt uint16) error {
 	defer result.Close()
 	return nil
 }
+
+func (m *MySqlAdapter) KwhLatest() float32 {
+	var kWh float32
+	err := m.db.QueryRow("SELECT watt as kWh FROM power ORDER BY time DESC LIMIT 1;").Scan(&kWh)
+	if err != nil {
+		fmt.Printf("Error sql KwhLatest: %s\n", err.Error())
+		return 0
+	}
+
+	return kWh
+}
+
 
 func (m *MySqlAdapter) KwhToday() float32 {
 	var kWh float32

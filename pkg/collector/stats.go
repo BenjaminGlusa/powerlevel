@@ -16,9 +16,8 @@ func FetchSolarStats(db adapter.DatabaseAdapter)([]PowerStats, error) {
 	var stats []PowerStats
 	var curStats PowerStats
 
-	// fixme: Implement db.KwhLatest()
-	curStats.CurrentPower = 0
-	curStats.YieldTotal = roundFloat(db.KwhToday(),3)
+	curStats.CurrentPower = roundFloat(db.KwhLatest(),3)
+	curStats.YieldToday = roundFloat(db.KwhToday(),3)
 	curStats.YieldMonth = roundFloat(db.KwhThisMonth(),3)
 	curStats.YieldYear = roundFloat(db.KwhThisYear(),3)
 	curStats.YieldTotal = roundFloat(db.KwhTotal(),3)
