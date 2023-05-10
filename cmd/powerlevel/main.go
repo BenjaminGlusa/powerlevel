@@ -2,25 +2,22 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"github.com/BenjaminGlusa/powerlevel/pkg/adapter"
+	"github.com/BenjaminGlusa/powerlevel/pkg/handler"
 )
+
 
 func main() {
 	fmt.Println("Power level")
+	port := ":4081"
 
 	var db adapter.DatabaseAdapter = adapter.NewMySqlAdapter("power", "power", "tv")
 	defer db.Close()
 	db.CreateTableIfNotExits()
 
-	kwhToday := db.KwhToday()
-	kwhThisMonth := db.KwhThisMonth()
-	KwhThisYear := db.KwhThisYear()
-	KwhTotal := db.KwhTotal()
-	fmt.Printf("kwh today: %.3f \n", kwhToday)
-	fmt.Printf("kwh this month: %.3f \n", kwhThisMonth)
-	fmt.Printf("kwh this year: %.3f \n", KwhThisYear)
-	fmt.Printf("kwh total: %.3f \n", KwhTotal)
+	fmt.Printf("Server started on port %s...\n", port)
 
-	fmt.Println("all done")
+	http.ListenAndServe(port, handler.NewRouter(db))
 
 }
